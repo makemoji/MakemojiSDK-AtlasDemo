@@ -224,8 +224,7 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
     NSString * messageText = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
     if ([part.MIMEType  isEqualToString:@"text/plain"] && [self detectMakemojiMessage:messageText] == YES) {
         if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) {
-            //return @"MEOutgoingMessageCollectionViewCell";
-            return @"MEIncomingMessageCollectionViewCell";            
+            return @"MEOutgoingMessageCollectionViewCell";
         } else {
             return @"MEIncomingMessageCollectionViewCell";
         }
