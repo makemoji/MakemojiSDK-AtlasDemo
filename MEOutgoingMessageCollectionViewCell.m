@@ -37,11 +37,26 @@
     self.bubbleView.layer.cornerRadius = 16;
     [self.contentView addSubview:self.bubbleView];
     [self.contentView sendSubviewToBack:self.bubbleView];
+    
+    self.avatarImageView = [[ATLAvatarImageView alloc] init];
+    self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.contentView addSubview:self.avatarImageView];
+    [self.contentView bringSubviewToFront:self.avatarImageView];
+    
 }
 
+- (void)updateWithSender:(id<ATLParticipant>)sender {
+    if (sender) {
+        self.avatarImageView.hidden = NO;
+        self.avatarImageView.avatarItem = sender;
+    } else {
+        self.avatarImageView.hidden = YES;
+    }
+}
 
-- (void)updateWithSender:(id<ATLParticipant>)sender { return; }
 - (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem { return; }
+
+
 - (void)presentMessage:(LYRMessage *)message {
     self.bubbleView.backgroundColor = [[ATLOutgoingMessageCollectionViewCell appearance] bubbleViewColor];
     LYRMessagePart *part = message.parts[0];
@@ -64,17 +79,17 @@
 -(void)layoutSubviews {
     [super layoutSubviews];
     if (!self.superview) { return; }
-
+    self.avatarImageView.frame = CGRectMake(self.contentView.frame.size.width-27-ATLMessageBubbleLabelHorizontalPadding, ATLMessageBubbleLabelVerticalPadding, 27, 27);
+    if (self.avatarImageView.hidden == YES) { self.avatarImageView.frame = CGRectZero; }
     CGRect bounds = self.contentView.bounds;
     CGFloat maxBubbleWidth = ATLMaxCellWidth();
     CGFloat maxTextWidth = maxBubbleWidth - (ATLMessageBubbleLabelHorizontalPadding*2);
     CGFloat textWidth = maxTextWidth;
     CGFloat bubbleWidth = maxBubbleWidth;
-    CGFloat leadIn = self.contentView.frame.size.width - maxBubbleWidth - ATLMessageCellHorizontalMargin;
+    CGFloat leadIn = self.contentView.frame.size.width - maxBubbleWidth - ATLMessageCellHorizontalMargin - self.avatarImageView.frame.size.width;
     UIView * internalView = (UIView *)[[self.messageView subviews] objectAtIndex:0];
     self.bubbleView.frame = CGRectMake(leadIn, 0, bubbleWidth, bounds.size.height);
     internalView.frame = CGRectMake(leadIn+ATLMessageBubbleLabelHorizontalPadding, ATLMessageBubbleLabelVerticalPadding, textWidth, self.contentView.frame.size.height);
-
 }
 
 - (NSString *)hexStringFromColor:(UIColor *)color {

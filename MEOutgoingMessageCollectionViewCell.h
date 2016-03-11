@@ -10,8 +10,10 @@
 #import "ATLMessagePresenting.h"
 #import "MECollectionViewCell.h"
 #import "ATLOutgoingMessageCollectionViewCell.h"
+#import "ATLAvatarImageView.h"
 
 @interface MEOutgoingMessageCollectionViewCell : MECollectionViewCell <ATLMessagePresenting>
 @property UIView * bubbleView;
+@property ATLAvatarImageView * avatarImageView;
 - (NSString *)hexStringFromColor:(UIColor *)color;
 @end

@@ -107,7 +107,7 @@ static ATLMDateProximity ATLMProximityToDate(NSDate *date)
         dateComponents.era == todayComponents.era) {
         return ATLMDateProximityToday;
     }
-    
+
     NSDateComponents *componentsToYesterday = [NSDateComponents new];
     componentsToYesterday.day = -1;
     NSDate *yesterday = [calendar dateByAddingComponents:componentsToYesterday toDate:now options:0];
@@ -118,19 +118,19 @@ static ATLMDateProximity ATLMProximityToDate(NSDate *date)
         dateComponents.era == yesterdayComponents.era) {
         return ATLMDateProximityYesterday;
     }
-    
+
     if (dateComponents.weekOfMonth == todayComponents.weekOfMonth &&
         dateComponents.month == todayComponents.month &&
         dateComponents.year == todayComponents.year &&
         dateComponents.era == todayComponents.era) {
         return ATLMDateProximityWeek;
     }
-    
+
     if (dateComponents.year == todayComponents.year &&
         dateComponents.era == todayComponents.era) {
         return ATLMDateProximityYear;
     }
-    
+
     return ATLMDateProximityOther;
 }
 
@@ -159,20 +159,24 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
     if (self.conversation) {
         [self addDetailsButton];
     }
-    
+
     [self configureUserInterfaceAttributes];
     [self registerNotificationObservers];
     
     self.participantDataSource = [ATLMParticipantDataSource participantDataSourceWithPersistenceManager:self.applicationController.persistenceManager];
     self.participantDataSource.excludedIdentifiers = [NSSet setWithObject:self.layerClient.authenticatedUserID];
-    
+
+
     // Makemoji Addition: Use this array to keep track of message position since heightForMessage does not return an index path
     self.messageCells = [NSMutableArray array];
     
     // nil the existing Input Accessory view to remove the message toolbar
-    
+
     ATLConversationView * conversationView = (ATLConversationView *)self.view;
     conversationView.inputAccessoryView = nil;
+    self.shouldDisplayAvatarItemForOneOtherParticipant = YES;
+    self.shouldDisplayAvatarItemForAuthenticatedUser = YES;
+   
     
     // initialize the Makemoji text input and toolbar
     
@@ -183,7 +187,7 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
     // initially hide the toolbar for recipient picker
     self.meTextInputView.hidden = YES;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
-    
+
     // custom collection view cell for displaying HTML messages
     [self registerClass:[MEOutgoingMessageCollectionViewCell class] forMessageCellWithReuseIdentifier:@"MEOutgoingMessageCollectionViewCell"];
     [self registerClass:[MEIncomingMessageCollectionViewCell class] forMessageCellWithReuseIdentifier:@"MEIncomingMessageCollectionViewCell"];
@@ -192,7 +196,7 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
     // initial offsets
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, (self.view.frame.size.height-self.meTextInputView.frame.origin.y), 0);
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, (self.view.frame.size.height-self.meTextInputView.frame.origin.y), 0);
-    
+
 }
 
 -(BOOL)detectMakemojiMessage:(NSString *)message {
@@ -201,7 +205,7 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
     pattern = [NSString stringWithFormat: @"\\%@", pattern];
     pattern = [NSString stringWithFormat: @"%@\\", pattern];
     pattern = [NSString stringWithFormat: @"%@]", pattern];
-    
+
     NSError *error = NULL;
     NSRange range = NSMakeRange(0, message.length);
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
@@ -220,7 +224,8 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
     NSString * messageText = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
     if ([part.MIMEType  isEqualToString:@"text/plain"] && [self detectMakemojiMessage:messageText] == YES) {
         if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) {
-            return @"MEOutgoingMessageCollectionViewCell";
+            //return @"MEOutgoingMessageCollectionViewCell";
+            return @"MEIncomingMessageCollectionViewCell";            
         } else {
             return @"MEIncomingMessageCollectionViewCell";
         }
@@ -243,17 +248,17 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
             [self.messageCells addObject:messsageIdentifier];
             index = [self.messageCells indexOfObject:[message.identifier absoluteString]];
         }
-        
+
         CGFloat maxWidth = ATLMaxCellWidth() - (ATLMessageBubbleLabelHorizontalPadding * 2);
         CGFloat messageHeight = [self.meTextInputView cellHeightForHTML:messageHTML
-                                                            atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
-                                                           maxCellWidth:maxWidth
-                                                              cellStyle:MECellStyleSimple];
+                                           atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
+                                          maxCellWidth:maxWidth
+                                             cellStyle:MECellStyleSimple];
         CGFloat totalHeight = messageHeight + ATLMessageBubbleLabelVerticalPadding*2;
         if (totalHeight < 38) totalHeight = 38 + ATLMessageBubbleLabelVerticalPadding;
         return  totalHeight;
     }
-    
+
     return 0;
 }
 
@@ -304,10 +309,10 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
 #pragma mark - Accessors
 
 - (void)setConversation:(LYRConversation *)conversation {
-    
+
     [super setConversation:conversation];
     [self configureTitle];
-    
+
     if (conversation != nil) {
         self.meTextInputView.hidden = NO;
         [self.meTextInputView showKeyboard];
@@ -407,7 +412,7 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
             dateFormatter = ATLMDefaultDateFormatter();
             break;
     }
-    
+
     NSString *dateString = [dateFormatter stringFromDate:date];
     NSString *timeString = [ATLMShortTimeFormatter() stringFromDate:date];
     
@@ -579,7 +584,7 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
 - (void)addDetailsButton
 {
     if (self.navigationItem.rightBarButtonItem) return;
-    
+
     UIBarButtonItem *detailsButtonItem = [[UIBarButtonItem alloc] initWithTitle:ATLMDetailsButtonLabel
                                                                           style:UIBarButtonItemStylePlain
                                                                          target:self
@@ -603,7 +608,7 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
     if (!self.conversation) return;
     if (!notification.object) return;
     if (![notification.object isEqual:self.conversation]) return;
-    
+
     [self configureTitle];
 }
 
@@ -618,8 +623,8 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
         } else {
             self.title = [self defaultTitle];
         }    } else {
-            self.title = [self defaultTitle];
-        }
+        self.title = [self defaultTitle];
+    }
 }
 
 - (NSString *)defaultTitle
