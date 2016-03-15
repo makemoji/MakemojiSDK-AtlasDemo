@@ -53,7 +53,6 @@
     self.messageView = [[MEMessageView alloc] initWithFrame:CGRectZero];
     self.messageView.autoresizingMask = UIViewAutoresizingNone;
     self.messageView.clipsToBounds = YES;
-    NSLog(@"%@", self.messageView.subviews);
     [self.contentView addSubview:self.messageView];
 }
 
@@ -76,7 +75,6 @@
     [super updateWithLastMessageText:lastMessageText];
     self.lastMessageText = lastMessageText;
     self.isMakemojiText = NO;
-    NSLog(@"%@", self.lastMessageLabelColor);
     if ([self detectMakemojiMessage:lastMessageText] == YES) {
         NSString * messageHTML = [METextInputView convertSubstituedToHTML:lastMessageText];
         UIColor * messageTextColor = self.lastMessageLabelColor;
