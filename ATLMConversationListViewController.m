@@ -26,6 +26,7 @@
 #import "ATLMNavigationController.h"
 #import "ATLMParticipantDataSource.h"
 #import "ATLMSplitViewController.h"
+#import "MEConversationListCell.h"
 
 @interface ATLMConversationListViewController () <ATLConversationListViewControllerDelegate, ATLConversationListViewControllerDataSource, ATLMSettingsViewControllerDelegate, UIActionSheetDelegate>
 
@@ -47,6 +48,7 @@ NSString *const ATLMComposeButtonAccessibilityLabel = @"Compose Button";
     self.delegate = self;
     self.dataSource = self;
     self.allowsEditing = YES;
+    self.cellClass = [MEConversationListCell class];
     
     // Left navigation item
     UIButton* infoButton= [UIButton buttonWithType:UIButtonTypeInfoLight];
@@ -104,35 +106,6 @@ NSString *const ATLMComposeButtonAccessibilityLabel = @"Compose Button";
     [self.participantDataSource participantsMatchingSearchText:searchText completion:^(NSSet *participants) {
         completion(participants);
     }];
-}
-
-- (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController lastMessageTextForConversation:(LYRConversation *)conversation {
-    LYRMessagePart *part = conversation.lastMessage.parts[0];
-    NSString * messageText = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-    if ([part.MIMEType  isEqualToString:@"text/plain"] && [self detectMakemojiMessage:messageText] == YES) {
-        return @"Emoji message";
-    }
-    return nil;
-}
-
--(BOOL)detectMakemojiMessage:(NSString *)message {
-    
-    NSString *pattern = @"[(.+?)";
-    pattern = [NSString stringWithFormat: @"\\%@", pattern];
-    pattern = [NSString stringWithFormat: @"%@\\", pattern];
-    pattern = [NSString stringWithFormat: @"%@]", pattern];
-    
-    NSError *error = NULL;
-    NSRange range = NSMakeRange(0, message.length);
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
-    NSArray *totalMatches = [regex matchesInString:message options:NSMatchingReportProgress range:range];
-    
-    if (totalMatches.count > 0) {
-        // possible message
-        return YES;
-    }
-    
-    return NO;
 }
 
 #pragma mark - ATLConversationListViewControllerDataSource
