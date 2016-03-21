@@ -247,14 +247,13 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
             [self.messageCells addObject:messsageIdentifier];
             index = [self.messageCells indexOfObject:[message.identifier absoluteString]];
         }
-
-        CGFloat maxWidth = ATLMaxCellWidth() - (ATLMessageBubbleLabelHorizontalPadding * 2);
         CGFloat messageHeight = [self.meTextInputView cellHeightForHTML:messageHTML
                                            atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
-                                          maxCellWidth:maxWidth
+                                          maxCellWidth:ATLMaxCellWidth()
                                              cellStyle:MECellStyleSimple];
         CGFloat totalHeight = messageHeight + ATLMessageBubbleLabelVerticalPadding*2;
-        if (totalHeight < 38) totalHeight = 38 + ATLMessageBubbleLabelVerticalPadding;
+        
+        if (totalHeight < ATLMessageBubbleDefaultHeight) totalHeight = ATLMessageBubbleDefaultHeight;
         return  totalHeight;
     }
 
@@ -273,12 +272,24 @@ NSString *const ATLMDetailsButtonLabel = @"Details";
 
 // the chat input frame changed size (keyboard show, expanding input)
 -(void)meTextInputView:(METextInputView *)inputView didChangeFrame:(CGRect)frame {
+    
+    CGFloat collapsedHeight = self.view.frame.size.height-frame.size.height;
     CGFloat heightOffset = (self.view.frame.size.height-self.meTextInputView.frame.origin.y);
-    if (heightOffset != self.collectionView.contentInset.bottom) {
-        self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, heightOffset, 0);
-        self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, heightOffset, 0);
-        [self scrollToBottomAnimated:YES];
+    CGFloat topOffset = 0;
+    
+    if (self.addressBarController != nil && self.addressBarController.view.subviews.count > 0) {
+        UIView * addressBarView = (UIView *)[self.addressBarController.view.subviews objectAtIndex:0];
+        topOffset = addressBarView.frame.size.height;
     }
+        
+    if (heightOffset != self.collectionView.contentInset.bottom) {
+        self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(topOffset, 0, heightOffset, 0);
+        self.collectionView.contentInset = UIEdgeInsetsMake(topOffset, 0, heightOffset, 0);
+        if (frame.origin.y != collapsedHeight) {
+            [self scrollToBottomAnimated:YES];
+        }
+    }
+
 }
 
 -(void)meTextInputView:(METextInputView *)inputView didTapCameraButton:(UIButton*)cameraButton {

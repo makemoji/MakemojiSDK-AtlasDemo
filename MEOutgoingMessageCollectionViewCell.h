@@ -15,5 +15,7 @@
 @interface MEOutgoingMessageCollectionViewCell : MECollectionViewCell <ATLMessagePresenting>
 @property UIView * bubbleView;
 @property ATLAvatarImageView * avatarImageView;
+@property (nonatomic) BOOL shouldDisplayAvatar;
+
 - (NSString *)hexStringFromColor:(UIColor *)color;
 @end

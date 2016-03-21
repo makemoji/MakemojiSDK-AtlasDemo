@@ -34,21 +34,15 @@
 
 -(void)layoutSubviews {
     [super layoutSubviews];
-    if (!self.superview) { return; }
-    
     self.avatarImageView.frame = CGRectMake(ATLMessageBubbleLabelHorizontalPadding, ATLMessageBubbleLabelVerticalPadding, 27, 27);
-    if (self.avatarImageView.hidden == YES) { self.avatarImageView.frame = CGRectZero; }
+    if (!self.superview) { return; }
+    if (self.shouldDisplayAvatar == NO) { self.avatarImageView.frame = CGRectZero; }
     
-    CGRect bounds = self.contentView.bounds;
-    CGFloat maxBubbleWidth = ATLMaxCellWidth();
-    CGFloat maxTextWidth = maxBubbleWidth - (ATLMessageBubbleLabelHorizontalPadding*2);
-    CGFloat textWidth = maxTextWidth;
-    CGFloat bubbleWidth = maxBubbleWidth;
     CGFloat leadIn = ATLMessageCellHorizontalMargin+self.avatarImageView.frame.size.width;
-    UIView * internalView = (UIView *)[[self.messageView subviews] objectAtIndex:0];
-    self.bubbleView.frame = CGRectMake(leadIn, 0, bubbleWidth, bounds.size.height);
-    internalView.frame = CGRectMake(leadIn+ATLMessageBubbleLabelHorizontalPadding, ATLMessageBubbleLabelVerticalPadding, textWidth, self.contentView.frame.size.height);
     
+    self.bubbleView.frame = CGRectMake(leadIn, 0, self.bubbleView.frame.size.width, self.bubbleView.frame.size.height);
+    self.messageView.frame = CGRectMake(leadIn+ATLMessageBubbleLabelHorizontalPadding, ATLMessageBubbleLabelVerticalPadding, self.messageView.frame.size.width, self.messageView.frame.size.height);
+
 }
 
 

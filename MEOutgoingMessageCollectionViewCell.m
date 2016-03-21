@@ -40,6 +40,8 @@
     
     self.avatarImageView = [[ATLAvatarImageView alloc] init];
     self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.avatarImageView.hidden = YES;
+    self.avatarImageView.frame = CGRectZero;
     [self.contentView addSubview:self.avatarImageView];
     [self.contentView bringSubviewToFront:self.avatarImageView];
     
@@ -54,8 +56,9 @@
     }
 }
 
-- (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem { return; }
-
+- (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem {
+    self.shouldDisplayAvatar = shouldDisplayAvatarItem;
+}
 
 - (void)presentMessage:(LYRMessage *)message {
     self.bubbleView.backgroundColor = [[ATLOutgoingMessageCollectionViewCell appearance] bubbleViewColor];
@@ -78,18 +81,20 @@
 
 -(void)layoutSubviews {
     [super layoutSubviews];
-    if (!self.superview) { return; }
     self.avatarImageView.frame = CGRectMake(self.contentView.frame.size.width-27-ATLMessageBubbleLabelHorizontalPadding, ATLMessageBubbleLabelVerticalPadding, 27, 27);
-    if (self.avatarImageView.hidden == YES) { self.avatarImageView.frame = CGRectZero; }
-    CGRect bounds = self.contentView.bounds;
-    CGFloat maxBubbleWidth = ATLMaxCellWidth();
-    CGFloat maxTextWidth = maxBubbleWidth - (ATLMessageBubbleLabelHorizontalPadding*2);
-    CGFloat textWidth = maxTextWidth;
+    if (!self.superview) { return; }
+    if (self.shouldDisplayAvatar == NO) { self.avatarImageView.frame = CGRectZero; }
+    CGFloat maxBubbleWidth = ATLMaxCellWidth() + (ATLMessageBubbleLabelHorizontalPadding*2);
+    CGFloat textHeight = self.contentView.frame.size.height-(ATLMessageBubbleLabelVerticalPadding*2);
+    CGSize textSize = [self.messageView suggestedSizeForTextForSize:CGSizeMake(ATLMaxCellWidth(), textHeight)];
     CGFloat bubbleWidth = maxBubbleWidth;
-    CGFloat leadIn = self.contentView.frame.size.width - maxBubbleWidth - ATLMessageCellHorizontalMargin - self.avatarImageView.frame.size.width;
-    UIView * internalView = (UIView *)[[self.messageView subviews] objectAtIndex:0];
-    self.bubbleView.frame = CGRectMake(leadIn, 0, bubbleWidth, bounds.size.height);
-    internalView.frame = CGRectMake(leadIn+ATLMessageBubbleLabelHorizontalPadding, ATLMessageBubbleLabelVerticalPadding, textWidth, self.contentView.frame.size.height);
+    textSize.width += (ATLMessageBubbleLabelHorizontalPadding * 2);
+    if (textSize.width < maxBubbleWidth) { bubbleWidth = textSize.width; }
+
+    CGFloat leadIn = self.contentView.frame.size.width - bubbleWidth - ATLMessageCellHorizontalMargin - self.avatarImageView.frame.size.width;
+
+    self.bubbleView.frame = CGRectMake(leadIn, 0, bubbleWidth, self.contentView.frame.size.height);
+    self.messageView.frame = CGRectMake(leadIn+ATLMessageBubbleLabelHorizontalPadding, ATLMessageBubbleLabelVerticalPadding, self.bubbleView.frame.size.width-(ATLMessageBubbleLabelVerticalPadding*2), self.bubbleView.frame.size.height-(ATLMessageBubbleLabelVerticalPadding*2));
 }
 
 - (NSString *)hexStringFromColor:(UIColor *)color {
