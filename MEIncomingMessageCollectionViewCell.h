@@ -7,7 +7,6 @@
 //
 
 #import "MEMessageView.h"
-#import "ATLMessagePresenting.h"
 #import "MEOutgoingMessageCollectionViewCell.h"
 
 @interface MEIncomingMessageCollectionViewCell : MEOutgoingMessageCollectionViewCell <ATLMessagePresenting>

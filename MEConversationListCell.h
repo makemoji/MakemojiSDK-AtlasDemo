@@ -8,8 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "MEMessageView.h"
-#import "ATLConversationPresenting.h"
-#import "ATLConversationTableViewCell.h"
+#import <Atlas/Atlas.h>
 
 @interface MEConversationListCell : ATLConversationTableViewCell <ATLConversationPresenting>
 @property MEMessageView * messageView;

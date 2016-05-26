@@ -29,26 +29,6 @@
     return self;
 }
 
--(BOOL)detectMakemojiMessage:(NSString *)message {
-    
-    NSString *pattern = @"[(.+?)";
-    pattern = [NSString stringWithFormat: @"\\%@", pattern];
-    pattern = [NSString stringWithFormat: @"%@\\", pattern];
-    pattern = [NSString stringWithFormat: @"%@]", pattern];
-    
-    NSError *error = NULL;
-    NSRange range = NSMakeRange(0, message.length);
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
-    NSArray *totalMatches = [regex matchesInString:message options:NSMatchingReportProgress range:range];
-    
-    if (totalMatches.count > 0) {
-        // possible message
-        return YES;
-    }
-    
-    return NO;
-}
-
 -(void)commonInit {
     self.messageView = [[MEMessageView alloc] initWithFrame:CGRectZero];
     self.messageView.autoresizingMask = UIViewAutoresizingNone;
@@ -75,7 +55,7 @@
     [super updateWithLastMessageText:lastMessageText];
     self.lastMessageText = lastMessageText;
     self.isMakemojiText = NO;
-    if ([self detectMakemojiMessage:lastMessageText] == YES) {
+    if ([METextInputView detectMakemojiMessage:lastMessageText] == YES) {
         NSString * messageHTML = [METextInputView convertSubstituedToHTML:lastMessageText];
         UIColor * messageTextColor = self.lastMessageLabelColor;
         NSString * fontSize = [NSString stringWithFormat:@"font-size:%ipx;", 16];

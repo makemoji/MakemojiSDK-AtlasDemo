@@ -7,10 +7,7 @@
 //
 
 #import "MEOutgoingMessageCollectionViewCell.h"
-#import "ATLConstants.h"
 #import "METextInputView.h"
-#import "ATLOutgoingMessageCollectionViewCell.h"
-#import "ATLMessagingUtilities.h"
 
 @implementation MEOutgoingMessageCollectionViewCell
 

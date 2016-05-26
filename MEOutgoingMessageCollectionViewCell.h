@@ -7,10 +7,8 @@
 //
 
 #import "MEMessageView.h"
-#import "ATLMessagePresenting.h"
 #import "MECollectionViewCell.h"
-#import "ATLOutgoingMessageCollectionViewCell.h"
-#import "ATLAvatarImageView.h"
+#import <Atlas/Atlas.h>
 
 @interface MEOutgoingMessageCollectionViewCell : MECollectionViewCell <ATLMessagePresenting>
 @property UIView * bubbleView;

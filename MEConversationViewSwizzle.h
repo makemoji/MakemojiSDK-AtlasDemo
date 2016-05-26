@@ -6,7 +6,7 @@
 //  Copyright © 2016 Layer, Inc. All rights reserved.
 //
 
-#import "ATLConversationView.h"
+#import <Atlas/Atlas.h>
 
 @interface ATLConversationView (Tracking)
 
